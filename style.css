@@ -1,0 +1,94 @@
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+.frameparent {
+    height: 100%;
+}
+
+.frame {
+  outline: 1px solid gray;
+  outline-width: 1px;
+  height: 100%;
+  clear: none;
+  resize: horizontal;
+  overflow: auto;
+}
+
+.toolframe {
+    float: left;
+    width: 100px;
+}
+
+.toolsection {
+    overflow: auto;
+    margin: 1px;
+}
+
+h3 {
+    margin: 2px;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 16px;
+}
+
+h4 {
+    margin: 2px;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 12px;
+}
+
+.tool {
+    width: 25px;
+    height: 25px;
+    outline: 1px solid gray;
+    margin: 2px;
+    float: left;
+    background-size: 100% 100%;
+}
+
+.tooltip {
+    visibility: hidden;
+    position: absolute;
+    z-index: 1;
+    background-color: white;
+    outline: 1px solid black;
+    padding: 0px;
+}
+
+.tooltip p {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 10px;
+    margin: 0px;
+}
+
+.tool:hover .tooltip {
+    visibility: visible;
+}
+
+#pointertool {
+    background-image: url("images/pointer.svg");
+    cursor: auto;
+}
+
+#erasertool {
+    background-image: url("images/eraser.svg");
+    cursor: url("images/eraser.svg"), auto;
+}
+
+#sinetool {
+    background-image: url("images/sinewave.svg");
+    cursor: url("images/sinewave.svg"), auto;
+}
+
+.staff {
+    margin: 5px;
+    width: 200px;
+    height: 200px;
+}
+
+.staff svg line {
+    stroke: black;
+    stroke-width: 1;
+}
