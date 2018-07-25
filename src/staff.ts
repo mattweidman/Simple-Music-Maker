@@ -1,18 +1,25 @@
-import { DOMElement, DOMElementNS, DOMAttr } from "./domelements";
+import { SVGElement, SVGAttr } from "./svgelements";
 
 /**
  * Represents and displays all the measures in the piece of music.
  */
 class Staff {
-    height: number;
-    width: number;
+
+    pixelHeight: number;
+    pixelWidth: number;
+    innerHeight: number;
+    innerWidth: number;
     rowHeight: number;
     measureWidth: number;
     measures: Measure[];
 
-    constructor(height: number, width: number, rowHeight: number, measureWidth: number) {
-        this.height = height;
-        this.width = width;
+    constructor(pixelHeight: number, pixelWidth: number, 
+            innerHeight: number, innerWidth: number,
+            rowHeight: number, measureWidth: number) {
+        this.pixelHeight = pixelHeight;
+        this.pixelWidth = pixelWidth;
+        this.innerHeight = innerHeight;
+        this.innerWidth = innerWidth;
         this.rowHeight = rowHeight;
         this.measureWidth = measureWidth;
         this.measures = [];
@@ -30,23 +37,21 @@ class Staff {
     /**
      * Construct SVG element containing staff.
      */
-    constructElement(): DOMElement {
-        var svg = new DOMElementNS("svg", "http://www.w3.org/2000/svg", [
-            new DOMAttr("width", this.width + ""),
-            new DOMAttr("height", this.height + ""),
-            new DOMAttr("viewBox", "0 0 " + this.width + " " + this.height)
+    constructElement(): SVGElement {
+        var svg = new SVGElement("svg", [
+            new SVGAttr("width", this.pixelWidth + ""),
+            new SVGAttr("height", this.pixelHeight + ""),
+            new SVGAttr("viewBox", "0 0 " + this.innerWidth + " " + this.innerHeight)
         ]);
 
         // staff lines
         for (var i=0; i<5; i++) {
-            var y: number = 15 + i * 10;
-            svg.addChild(new DOMElement("line", [
-                new DOMAttr("x1", "0"),
-                new DOMAttr("y1", y + ""),
-                new DOMAttr("x2", "100"),
-                new DOMAttr("y2", y + ""),
-                new DOMAttr("stroke", "black"),
-                new DOMAttr("stroke-width", "5")
+            var y: number = (15 + i * 10) * this.rowHeight / 100;
+            svg.addChild(new SVGElement("line", [
+                new SVGAttr("x1", "0"),
+                new SVGAttr("y1", y + ""),
+                new SVGAttr("x2", this.measureWidth + ""),
+                new SVGAttr("y2", y + "")
             ]));
         }
 
@@ -62,5 +67,5 @@ class Measure {
 }
 
 // create the staff
-var staff: Staff = new Staff(100, 100, 100, 100);
+var staff: Staff = new Staff(200, 200, 200, 200, 200, 200);
 staff.display();
