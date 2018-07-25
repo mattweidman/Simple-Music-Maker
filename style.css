@@ -13,18 +13,18 @@ html, body {
   outline-width: 1px;
   height: 100%;
   clear: none;
-  resize: horizontal;
-  overflow: auto;
+  overflow: hidden;
 }
 
 .toolframe {
     float: left;
     width: 100px;
+    resize: horizontal;
 }
 
 .toolsection {
-    overflow: auto;
     margin: 1px;
+    clear: both;
 }
 
 h3 {
