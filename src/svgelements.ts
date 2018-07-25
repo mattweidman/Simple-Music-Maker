@@ -41,6 +41,16 @@ export class SVGElement {
     }
 
     /**
+     * Adds new attributes to the DOM element.
+     * @param attrs list of attributes to add
+     */
+    addAttributes(...attrs: SVGAttr[]) {
+        attrs.forEach(attr => {
+            this.addAttribute(attr);
+        });
+    }
+
+    /**
      * Adds a new DOM element as a child.
      * @param child new DOM element
      */
