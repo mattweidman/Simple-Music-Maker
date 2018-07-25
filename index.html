@@ -10,6 +10,7 @@
     <div class="frameparent" id="frameparent">
       <div class="frame toolframe">
         <h3>Tools</h3>
+        <h4>Basic</h4>
         <div class="toolsection">
           <div class="tool" id="pointertool">
             <span class="tooltip">
@@ -40,7 +41,8 @@
         </div>
       </div>
       <div class="frame musicframe">
-        <div class="staff">
+        <div class="staff" id="staffdiv">
+          <!-- <svg id="staffsvg"></svg>
           <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
             <g
               id="g1876"
@@ -66,7 +68,7 @@
             <line x1="0" y1="35" x2="100" y2="35"></line>
             <line x1="0" y1="45" x2="100" y2="45"></line>
             <line x1="0" y1="55" x2="100" y2="55"></line>
-          </svg>
+          </svg> -->
         </div>
       </div>
     </div>
@@ -76,5 +78,6 @@
     // You can also require other files to run in this process
     require('./dist/renderer.js');
     require('./dist/tools.js');
+    require('./dist/staff.js');
   </script>
 </html>
