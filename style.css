@@ -95,13 +95,7 @@ h4 {
     background-image: url("images/newmeasure.svg");
 }
 
-.staff {
-    margin: 5px;
-    width: 200px;
-    height: 200px;
-}
-
 .staff svg line {
     stroke: black;
-    stroke-width: 2;
+    stroke-width: 1;
 }
