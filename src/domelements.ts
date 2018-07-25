@@ -1,32 +1,36 @@
 var xmlns: string = "http://www.w3.org/2000/svg";
 
-/**
- * Represents an element in HTML DOM.
- */
-export class SVGElement {
+export class DOMElement {
     name: string;
-    attributes: SVGAttr[];
+    attributes: DOMAttr[];
     children: SVGElement[];
 
-    constructor(name: string, attributes?: SVGAttr[], children?: SVGElement[]) {
+    constructor(name: string, attributes?: DOMAttr[], children?: SVGElement[]) {
         this.name = name;
         this.attributes = attributes === undefined ? [] : attributes;
         this.children = children === undefined ? [] : children;
     }
 
     /**
+     * Create a DOM element without attributes or children.
+     */
+    createElement(): Element {
+        return document.createElement(this.name);
+    }
+
+    /**
      * Constructs the DOM element that JavaScript can use.
      */
-    getJSDom(): Element {
+    getJSElement(): Element {
 
-        var elem: Element = document.createElementNS(xmlns, this.name);
+        var elem: Element = this.createElement();
 
         this.attributes.forEach(attribute => {
             elem.setAttribute(attribute.key, attribute.value);
         });
 
         this.children.forEach(child => {
-            elem.appendChild(child.getJSDom());
+            elem.appendChild(child.getJSElement());
         });
 
         return elem;
@@ -36,7 +40,7 @@ export class SVGElement {
      * Adds a new attribute to the DOM element.
      * @param attr attribute to add
      */
-    addAttribute(attr: SVGAttr) {
+    addAttribute(attr: DOMAttr) {
         this.attributes.push(attr);
     }
 
@@ -44,7 +48,7 @@ export class SVGElement {
      * Adds new attributes to the DOM element.
      * @param attrs list of attributes to add
      */
-    addAttributes(...attrs: SVGAttr[]) {
+    addAttributes(...attrs: DOMAttr[]) {
         attrs.forEach(attr => {
             this.addAttribute(attr);
         });
@@ -60,9 +64,23 @@ export class SVGElement {
 }
 
 /**
+ * Represents an element in HTML DOM.
+ */
+export class SVGElement extends DOMElement {
+
+    constructor(name: string, attributes?: DOMAttr[], children?: SVGElement[]) {
+        super(name, attributes, children);
+    }
+
+    createElement(): Element {
+        return document.createElementNS(xmlns, this.name);
+    }
+}
+
+/**
  * HTML attribute.
  */
-export class SVGAttr {
+export class DOMAttr {
     key: string;
     value: string;
 
