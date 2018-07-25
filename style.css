@@ -48,6 +48,14 @@ h4 {
     background-size: 100% 100%;
 }
 
+.measurebutton {
+    height: 25px;
+    outline: 1px solid gray;
+    margin: 2px;
+    float: left;
+    background-size: 100% 100%;
+}
+
 .tooltip {
     visibility: hidden;
     position: absolute;
@@ -61,6 +69,7 @@ h4 {
     font-family: Arial, Helvetica, sans-serif;
     font-size: 10px;
     margin: 0px;
+    cursor: inherit;
 }
 
 .tool:hover .tooltip {
@@ -69,7 +78,7 @@ h4 {
 
 #pointertool {
     background-image: url("images/pointer.svg");
-    cursor: auto;
+    cursor: default;
 }
 
 #erasertool {
@@ -80,6 +89,10 @@ h4 {
 #sinetool {
     background-image: url("images/sinewave.svg");
     cursor: url("images/sinewave.svg"), auto;
+}
+
+#newmeasure {
+    background-image: url("images/newmeasure.svg");
 }
 
 .staff {
