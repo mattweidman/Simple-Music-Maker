@@ -9,11 +9,11 @@ html, body {
 }
 
 .frame {
-  outline: 1px solid gray;
-  outline-width: 1px;
-  height: 100%;
-  clear: none;
-  overflow: hidden;
+    outline: 1px solid gray;
+    outline-width: 1px;
+    height: 100%;
+    clear: none;
+    overflow: hidden;
 }
 
 .toolframe {
@@ -98,4 +98,8 @@ h4 {
 .staff svg line {
     stroke: black;
     stroke-width: 1;
+}
+
+.staff {
+    margin: 5px;
 }

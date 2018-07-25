@@ -5,12 +5,11 @@ import { SVGElement, SVGAttr } from "./svgelements";
  */
 class Staff {
 
-    pixelHeight: number;
-    pixelWidth: number;
-    innerHeight: number;
-    innerWidth: number;
-    rowHeight: number;
-    measureWidth: number;
+    pixelHeight: number; // height of staff in pixels
+    pixelWidth: number; // width of staff in pixels
+    scale: number; // amount to scale entire staff from its original size
+    measureWidth: number; // length of each measure (post-scaling)
+    measureHeight: number; // distance between top of one measure to top of next (post-scaling)
     measures: Measure[];
 
     constructor() {
@@ -18,16 +17,13 @@ class Staff {
         var frame = document.getElementById("musicframe");
         var width = frame.clientWidth;
         var height = frame.clientHeight;
-        console.log(frame);
         
         this.pixelHeight = height;
         this.pixelWidth = width;
 
-        this.innerHeight = height;
-        this.innerWidth = width;
-
-        this.rowHeight = 200;
+        this.scale = 2;
         this.measureWidth = 100;
+        this.measureHeight = 100;
         this.measures = [];
     }
 
@@ -47,43 +43,99 @@ class Staff {
         var svg = new SVGElement("svg", [
             new SVGAttr("width", this.pixelWidth + ""),
             new SVGAttr("height", this.pixelHeight + ""),
-            new SVGAttr("viewBox", "0 0 " + this.innerWidth + " " + this.innerHeight)
+            new SVGAttr("viewBox", "0 0 " + (this.pixelWidth / this.scale) + " " + (this.pixelHeight / this.scale))
         ]);
 
-        var rowg = new SVGElement("g", [
-            new SVGAttr("transform", "scale(" + this.rowHeight/100 + " " + this.rowHeight/100 + ")")
-        ]);
-        svg.addChild(rowg);
+        var g = new SVGElement("g");
+        svg.addChild(g);
 
-        // staff lines
-        for (var i=0; i<5; i++) {
-            var y: number = (15 + i * 10);
-            rowg.addChild(new SVGElement("line", [
-                new SVGAttr("x1", "0"),
-                new SVGAttr("y1", y + ""),
-                new SVGAttr("x2", this.measureWidth + ""),
-                new SVGAttr("y2", y + "")
-            ]));
-        }
-
-        // clef
-        rowg.addChild(new SVGElement("use", [
-            new SVGAttr("href", "./images/trebleclef.svg#svg1938"),
-            new SVGAttr("x", "0"),
-            new SVGAttr("y", "0"),
-            new SVGAttr("width", this.rowHeight + ""),
-            new SVGAttr("height", this.rowHeight + "")
-        ]));
+        var row1 = new Row(this.measureWidth, 0).constructElement();
+        row1.addChild(new Measure(this.measureWidth, this.measureWidth/2).constructElement());
+        row1.addChild(new Measure(this.measureWidth, this.measureWidth*3/2).constructElement());
+        
+        g.addChild(row1);
 
         return svg;
     }
 }
 
 /**
+ * A row of measures in the staff.
+ */
+class Row {
+    element: SVGElement;
+
+    constructor(measureWidth: number, ytranslate: number) {
+        this.element = new SVGElement("g", [
+            new SVGAttr("transform", "translate(0 " + ytranslate + ")")
+        ]);
+
+        // staff lines
+        for (var i=0; i<5; i++) {
+            var y: number = 15 + i * 10;
+            this.element.addChild(new SVGElement("line", [
+                new SVGAttr("x1", "0"),
+                new SVGAttr("y1", y + ""),
+                new SVGAttr("x2", measureWidth / 2 + ""),
+                new SVGAttr("y2", y + "")
+            ]));
+        }
+
+        // clef
+        this.element.addChild(new SVGElement("use", [
+            new SVGAttr("href", "./images/trebleclef.svg#svg1938"),
+            new SVGAttr("x", "0"),
+            new SVGAttr("y", "0")
+        ]));
+
+        // line on the left
+        this.element.addChild(new SVGElement("line", [
+            new SVGAttr("x1", "0.5"),
+            new SVGAttr("y1", "15"),
+            new SVGAttr("x2", "0.5"),
+            new SVGAttr("y2", "55")
+        ]));
+    }
+
+    constructElement(): SVGElement {
+        return this.element;
+    }
+}
+
+/**
  * A musical measure.
  */
-class Measure {
+class Measure {    
+    element: SVGElement;
 
+    constructor(measureWidth: number, xtranslate: number) {
+        this.element = new SVGElement("g", [
+            new SVGAttr("transform", "translate(" + xtranslate + " 0)")
+        ]);
+
+        // staff lines
+        for (var i=0; i<5; i++) {
+            var y: number = 15 + i * 10;
+            this.element.addChild(new SVGElement("line", [
+                new SVGAttr("x1", "0"),
+                new SVGAttr("y1", y + ""),
+                new SVGAttr("x2", measureWidth + ""),
+                new SVGAttr("y2", y + "")
+            ]));
+        }
+
+        // line on the left
+        this.element.addChild(new SVGElement("line", [
+            new SVGAttr("x1", (measureWidth - 0.5) + ""),
+            new SVGAttr("y1", "15"),
+            new SVGAttr("x2", (measureWidth - 0.5) + ""),
+            new SVGAttr("y2", "55")
+        ]));
+    }
+
+    constructElement(): SVGElement {
+        return this.element;
+    }
 }
 
 // create the staff
