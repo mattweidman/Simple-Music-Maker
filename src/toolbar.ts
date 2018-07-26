@@ -1,21 +1,24 @@
 import { DOMElement, DOMAttr } from "./domelements"
 import { Staff } from "./staff";
+import { Tool, setSelectedTool } from "./tool";
 
 /**
  * Toolbar on left side of screen.
  */
 export class Toolbar {
-    sections: ToolSection[]
+    sections: ToolSection[];
     staff: Staff;
 
     constructor(staff: Staff) {
         this.sections = [
             new ToolSection("Basic", [
-                new ToolButton("Selector", "default", "url('images/pointer.svg')"),
-                new ToolButton("Eraser", "url('images/eraser.svg'), auto", "url('images/eraser.svg')")
+                new ToolButton("Selector", "default", "url('images/pointer.svg')", Tool.Selector),
+                new ToolButton("Eraser", "url('images/eraser.svg'), auto", "url('images/eraser.svg')", 
+                    Tool.Eraser)
             ]),
             new ToolSection("Tones", [
-                new ToolButton("Sine wave", "url('images/sinewave.svg'), auto", "url('images/sinewave.svg')")
+                new ToolButton("Sine wave", "url('images/sinewave.svg'), auto", "url('images/sinewave.svg')", 
+                    Tool.Sinewave)
             ]),
             new ToolSection("Measures", [
                 new Button("New measure", "url('images/newmeasure.svg')", () => {
@@ -23,7 +26,7 @@ export class Toolbar {
                     staff.display();
                 })
             ])
-        ]
+        ];
         this.staff = staff;
     }
 
@@ -111,9 +114,10 @@ class Button {
 class ToolButton extends Button {
     cursor: string;
 
-    constructor(name: string, cursor: string, image: string) {
+    constructor(name: string, cursor: string, image: string, tool: Tool) {
         super(name, image, () => {
             document.getElementById("frameparent").style.cursor = this.cursor;
+            setSelectedTool(tool);
         });
         this.cursor = cursor;
     }

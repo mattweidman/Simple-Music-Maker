@@ -1,7 +1,7 @@
 // starting point for application-specific code.
 
 import { Staff } from "./staff";
-import { Toolbar } from "./tools";
+import { Toolbar } from "./toolbar";
 
 // create the staff
 var staff: Staff = new Staff();

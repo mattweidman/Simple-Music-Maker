@@ -1,4 +1,5 @@
 import { SVGElement, DOMAttr } from "./domelements";
+import { Tool, getSelectedTool } from "./tool";
 
 /**
  * Represents and displays all the measures in the piece of music.
@@ -8,15 +9,19 @@ export class Staff {
     scale: number; // amount to scale from original size
     measureWidth: number; // length of each measure (post-scaling)
     measureHeight: number; // distance between top of one measure to top of next (post-scaling)
-    measures: Measure[];
+
+    measures: Measure[]; // list of measures
+
+    selected: Selectable; // currently selected element on the staff
 
     constructor() {
         this.scale = 2;
-
         this.measureWidth = 100;
         this.measureHeight = 100;
 
-        this.measures = [new Measure(), new Measure()];
+        this.measures = [new Measure(this)];
+
+        this.selected = null;
     }
 
     /**
@@ -82,6 +87,15 @@ export class Staff {
         row.addChild(verticalLine(rowLen - 4, 15, 40, 1));
         row.addChild(verticalLine(rowLen - 1, 15, 40, 2));
 
+        /* // click to unselect
+        element.setOnClick(() => {
+            if (this.selected !== null) {
+                this.selected.unselect();
+                this.selected = null;
+                this.display();
+            }
+        }); */
+
         return element;
     }
 
@@ -106,23 +120,81 @@ export class Staff {
         return element;
     }
 
+    /**
+     * Add new measure to end.
+     */
     addMeasure() {
-        this.measures.push(new Measure());
+        this.measures.push(new Measure(this));
     }
+}
+
+/**
+ * Something that can be selected by clicking.
+ */
+interface Selectable {
+    /** Set selected */
+    select(): void;
+
+    /** Set unselected */
+    unselect(): void;
+
+    /** Returns whether this is selected */
+    isSelected(): boolean;
 }
 
 /**
  * A musical measure.
  */
-class Measure {
+class Measure implements Selectable {
+    staff: Staff;
+
+    constructor(staff: Staff) {
+        this.staff = staff;
+    }
 
     getDOMElement(measureWidth: number, xtranslate: number): SVGElement {
+        var staffTop = 15;
+        var staffHeight = 40;
+
         var element: SVGElement = staffLines(xtranslate, 0, measureWidth);
 
         // line on the right
-        element.addChild(verticalLine(measureWidth - 0.5, 15, 40));
+        element.addChild(verticalLine(measureWidth - 0.5, staffTop, staffHeight));
+
+        // on click, mark selected
+        element.setOnClick(() => {
+            this.select();
+            this.staff.display();
+        });
+
+        // if selected, display box around measure
+        if (this.isSelected()) {
+            var horiMargin = 4;
+            var vertMargin = 8;
+            element.addChild(horizontalLine(-horiMargin, staffTop - vertMargin, measureWidth + horiMargin*2));
+            element.addChild(horizontalLine(-horiMargin, staffTop + staffHeight + vertMargin, measureWidth + horiMargin*2));
+            element.addChild(verticalLine(-horiMargin, staffTop - vertMargin, staffHeight + vertMargin * 2));
+            element.addChild(verticalLine(measureWidth + horiMargin, staffTop - vertMargin, staffHeight + vertMargin * 2));
+        }
 
         return element;
+    }
+
+    select() {
+        if (getSelectedTool() === Tool.Selector) {
+            if (this.staff.selected !== null) {
+                this.staff.selected.unselect();
+            }
+            this.staff.selected = this;
+        }
+    }
+
+    unselect() {
+        
+    }
+
+    isSelected(): boolean {
+        return this === this.staff.selected;
     }
 }
 
@@ -185,6 +257,16 @@ function staffLines(x: number, y: number, length: number): SVGElement {
         new DOMAttr("transform", "translate(" + x + " " + y + ")")
     ]);
 
+    // rectangle in the background so staff lines are clickable
+    element.addChild(new SVGElement("rect", [
+        new DOMAttr("x", "0"),
+        new DOMAttr("y", "15"),
+        new DOMAttr("width", length + ""),
+        new DOMAttr("height", "40"),
+        new DOMAttr("style", "opacity:0;")
+    ]));
+
+    // lines
     for (var i=0; i<5; i++) {
         var y: number = 15 + i * 10;
         element.addChild(horizontalLine(0, y, length));
