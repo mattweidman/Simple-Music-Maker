@@ -12,16 +12,16 @@ export class Staff {
 
     measures: Measure[]; // list of measures
 
-    selected: Selectable; // currently selected element on the staff
+    selection: Selection; // currently selected elements on the staff
 
     constructor() {
         this.scale = 2;
         this.measureWidth = 100;
         this.measureHeight = 100;
 
-        this.measures = [new Measure(this)];
+        this.selection = new Selection();
 
-        this.selected = null;
+        this.measures = [new Measure(this)];
     }
 
     /**
@@ -124,10 +124,9 @@ export class Staff {
             new DOMAttr("style", "opacity:0;")
         ]);
 
-        element.setOnClick(() => {
-            if (this.selected !== null) {
-                this.selected.unselect();
-                this.selected = null;
+        element.setOnClick((event: MouseEvent) => {
+            if (!event.ctrlKey) {
+                this.selection.clear();
                 this.display();
             }
         });
@@ -144,18 +143,64 @@ export class Staff {
 }
 
 /**
+ * A pointer to whatever is currently selected.
+ */
+class Selection {
+    selected: Selectable[];
+
+    constructor() {
+        this.selected = [];
+    }
+
+    /**
+     * Remove all from selection.
+     */
+    clear() {
+        this.selected = [];
+    }
+
+    /**
+     * Add an object to selection without removing others.
+     * @param obj selectable object
+     */
+    add(obj: Selectable) {
+        if (this.selected.indexOf(obj) === -1) {
+            this.selected.push(obj);
+        }
+    }
+
+    /**
+     * Unselect an object.
+     * @param obj selectable object
+     */
+    remove(obj: Selectable) {
+        var index: number = this.selected.indexOf(obj);
+        if (index >= 0) {
+            this.selected.splice(index, 1);
+        }
+    }
+
+    /**
+     * Clears selection and selects one object.
+     * @param obj selectable object
+     */
+    setSelection(obj: Selectable) {
+        this.selected = [obj];
+    }
+
+    /**
+     * Returns whether an object is selected.
+     * @param obj selectable object
+     */
+    isSelected(obj: Selectable): boolean {
+        return this.selected.indexOf(obj) > -1;
+    }
+}
+
+/**
  * Something that can be selected by clicking.
  */
-interface Selectable {
-    /** Set selected */
-    select(): void;
-
-    /** Set unselected */
-    unselect(): void;
-
-    /** Returns whether this is selected */
-    isSelected(): boolean;
-}
+interface Selectable {}
 
 /**
  * A musical measure.
@@ -177,13 +222,25 @@ class Measure implements Selectable {
         element.addChild(verticalLine(measureWidth - 0.5, staffTop, staffHeight));
 
         // on click, mark selected
-        element.setOnClick(() => {
-            this.select();
-            this.staff.display();
+        element.setOnClick((event: MouseEvent) => {
+            if (getSelectedTool() === Tool.Selector) {
+                if (event.ctrlKey) {
+                    if (this.staff.selection.isSelected(this)) {
+                        this.staff.selection.remove(this);
+                    }
+                    else {
+                        this.staff.selection.add(this);
+                    }
+                }
+                else {
+                    this.staff.selection.setSelection(this);
+                }
+                this.staff.display();
+            }
         });
 
         // if selected, display box around measure
-        if (this.isSelected()) {
+        if (this.staff.selection.isSelected(this)) {
             var horiMargin = 4;
             var vertMargin = 8;
             element.addChild(horizontalLine(-horiMargin, staffTop - vertMargin, measureWidth + horiMargin*2));
@@ -193,23 +250,6 @@ class Measure implements Selectable {
         }
 
         return element;
-    }
-
-    select() {
-        if (getSelectedTool() === Tool.Selector) {
-            if (this.staff.selected !== null) {
-                this.staff.selected.unselect();
-            }
-            this.staff.selected = this;
-        }
-    }
-
-    unselect() {
-        
-    }
-
-    isSelected(): boolean {
-        return this === this.staff.selected;
     }
 }
 

@@ -8,7 +8,7 @@ export class DOMElement {
     attributes: DOMAttr[];
     children: SVGElement[];
     value: string;
-    onclick: () => void;
+    onclick: (e: MouseEvent) => void;
 
     constructor(name: string, attributes?: DOMAttr[], children?: SVGElement[], value?: string) {
         this.name = name;
@@ -108,7 +108,7 @@ export class DOMElement {
      * Sets the function that is called when this is clicked.
      * @param fun onclick function
      */
-    setOnClick(fun: () => void) {
+    setOnClick(fun: (e: MouseEvent) => void) {
         this.onclick = fun;
     }
 }
