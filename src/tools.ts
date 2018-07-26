@@ -9,14 +9,14 @@ class Toolbar {
     constructor() {
         this.sections = [
             new ToolSection("Basic", [
-                new ToolButton("Selector", "default", 'url("images/pointer.svg")'),
-                new ToolButton("Eraser", 'url("images/eraser.svg"), auto', 'url("images/eraser.svg")')
+                new ToolButton("Selector", "default", "url('images/pointer.svg')"),
+                new ToolButton("Eraser", "url('images/eraser.svg'), auto", "url('images/eraser.svg')")
             ]),
             new ToolSection("Tones", [
-                new ToolButton("Sine wave", 'url("images/sinewave.svg")', 'url("images/sinewave.svg"), auto')
+                new ToolButton("Sine wave", "url('images/sinewave.svg'), auto", "url('images/sinewave.svg')")
             ]),
             new ToolSection("Measures", [
-                new Button("New measure", 'url("images/newmeasure.svg")')
+                new Button("New measure", "url('images/newmeasure.svg')")
             ])
         ]
     }
@@ -107,7 +107,7 @@ class ToolButton extends Button {
     getDOMElement(): DOMElement {
         var element: DOMElement = super.getDOMElement();
         var style: string = element.getAttribute("style");
-        style += "cursor: " + this.cursor + ";";
+        style += " cursor: " + this.cursor + ";";
         element.setAttribute("style", style);
         return element;
     }

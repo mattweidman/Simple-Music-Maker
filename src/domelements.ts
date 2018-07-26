@@ -73,12 +73,13 @@ export class DOMElement {
      * @param key name of attribute
      */
     getAttribute(key: string): string {
+        var found = null;
         this.attributes.forEach(attribute => {
             if (attribute.key === key) {
-                return attribute.value;
+                found = attribute.value;
             }
         });
-        return null;
+        return found;
     }
 
     /**
