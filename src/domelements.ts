@@ -5,6 +5,7 @@ export class DOMElement {
     attributes: DOMAttr[];
     children: SVGElement[];
     value: string;
+    onclick: () => void;
 
     constructor(name: string, attributes?: DOMAttr[], children?: SVGElement[], value?: string) {
         this.name = name;
@@ -38,6 +39,8 @@ export class DOMElement {
         if (this.value !== "") {
             elem.innerHTML = this.value;
         }
+
+        elem.addEventListener("click", this.onclick);
 
         return elem;
     }
@@ -95,6 +98,14 @@ export class DOMElement {
             }
         });
         this.addAttribute(new DOMAttr(key, value));
+    }
+
+    /**
+     * Sets the function that is called when this is clicked.
+     * @param fun onclick function
+     */
+    setOnClick(fun: () => void) {
+        this.onclick = fun;
     }
 }
 
