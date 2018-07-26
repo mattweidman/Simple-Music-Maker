@@ -58,6 +58,9 @@ export class Staff {
             new DOMAttr("viewBox", "0 0 " + innerWidth + " " + innerHeight)
         ]);
 
+        // background
+        element.addChild(this.background(innerWidth, innerHeight));
+
         var g = new SVGElement("g");
         element.addChild(g);
 
@@ -87,15 +90,6 @@ export class Staff {
         row.addChild(verticalLine(rowLen - 4, 15, 40, 1));
         row.addChild(verticalLine(rowLen - 1, 15, 40, 2));
 
-        /* // click to unselect
-        element.setOnClick(() => {
-            if (this.selected !== null) {
-                this.selected.unselect();
-                this.selected = null;
-                this.display();
-            }
-        }); */
-
         return element;
     }
 
@@ -109,13 +103,34 @@ export class Staff {
 
         // clef
         element.addChild(new SVGElement("use", [
-            new DOMAttr("href", "./images/trebleclef.svg#svg1938"),
-            new DOMAttr("x", "0"),
-            new DOMAttr("y", "0")
+            new DOMAttr("href", "./images/trebleclef.svg#svg1938")
         ]));
 
         // line on the left
         element.addChild(verticalLine(0.5, 15, 40));
+
+        return element;
+    }
+
+    /**
+     * Create transparent background that unselects everything when clicked.
+     * @param width width of background
+     * @param height height of background
+     */
+    background(width: number, height: number): SVGElement {
+        var element: SVGElement = new SVGElement("rect", [
+            new DOMAttr("width", width + ""),
+            new DOMAttr("height", height + ""),
+            new DOMAttr("style", "opacity:0;")
+        ]);
+
+        element.setOnClick(() => {
+            if (this.selected !== null) {
+                this.selected.unselect();
+                this.selected = null;
+                this.display();
+            }
+        });
 
         return element;
     }

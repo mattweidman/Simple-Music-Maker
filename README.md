@@ -5,7 +5,6 @@ A simple music maker, inspired by Mario Paint. Currently a work in progress. I a
 ## TODO
 
 ### Measures
-* Unselect measures
 * Insert measures
 * Delete measures
 
