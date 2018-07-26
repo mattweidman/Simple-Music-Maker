@@ -7,7 +7,8 @@ export class Staff {
 
     pixelHeight: number; // height of staff in pixels
     pixelWidth: number; // width of staff in pixels
-    scale: number; // amount to scale entire staff from its original size
+    innerHeight: number; // height of staff in SVG's coordinate system
+    innerWidth: number; // width of staff in SVG's coordinate system
     measureWidth: number; // length of each measure (post-scaling)
     measureHeight: number; // distance between top of one measure to top of next (post-scaling)
     measures: Measure[];
@@ -22,7 +23,10 @@ export class Staff {
         this.pixelHeight = height;
         this.pixelWidth = width;
 
-        this.scale = 2;
+        var scale = 2;
+        this.innerHeight = height/scale;
+        this.innerWidth = width/scale;
+
         this.measureWidth = 100;
         this.measureHeight = 100;
 
@@ -42,31 +46,49 @@ export class Staff {
         var element: SVGElement = new SVGElement("svg", [
             new DOMAttr("width", this.pixelWidth + ""),
             new DOMAttr("height", this.pixelHeight + ""),
-            new DOMAttr("viewBox", "0 0 " + (this.pixelWidth / this.scale) + " " + (this.pixelHeight / this.scale))
+            new DOMAttr("viewBox", "0 0 " + this.innerWidth + " " + this.innerHeight)
         ]);
 
         var g = new SVGElement("g");
         element.addChild(g);
 
-        // rows
-        var row1: SVGElement = this.createRow(0);
-        var rowLen: number = 0;
-        this.measures.forEach((measure, index) => {
-            row1.addChild(measure.getDOMElement(this.measureWidth, this.measureWidth * (index + 0.5)));
-            rowLen = this.measureWidth * (index + 1.5);
+        // initialize first row
+        var measureStart = this.measureWidth/2;
+        var rowLen: number = measureStart;
+        var rowY: number = 0;
+        var row: SVGElement = this.createRow(rowY, rowLen);
+        g.addChild(row);
+
+        // add measures, breaking into new rows when needed
+        this.measures.forEach(measure => {
+
+            // go to next row when ready
+            if (rowLen + this.measureWidth >= this.innerWidth) {
+                rowLen = measureStart;
+                rowY += this.measureHeight;
+                row = this.createRow(rowY, rowLen);
+                g.addChild(row);
+            }
+
+            // add measure to current row
+            row.addChild(measure.getDOMElement(this.measureWidth, rowLen));
+            rowLen += this.measureWidth;
         });
 
         // double bar
-        row1.addChild(verticalLine(rowLen - 4, 15, 40, 1));
-        row1.addChild(verticalLine(rowLen - 1, 15, 40, 2));
-        
-        g.addChild(row1);
+        row.addChild(verticalLine(rowLen - 4, 15, 40, 1));
+        row.addChild(verticalLine(rowLen - 1, 15, 40, 2));
 
         return element;
     }
 
-    createRow(ytranslate: number): SVGElement {
-        var element = staffLines(0, ytranslate, this.measureWidth/2);
+    /**
+     * Create the beginning part of a row of measures including the clef.
+     * @param ytranslate amount to shift row down by
+     * @param width width of row beginning (not including first measure)
+     */
+    createRow(ytranslate: number, width: number): SVGElement {
+        var element = staffLines(0, ytranslate, width);
 
         // clef
         element.addChild(new SVGElement("use", [
