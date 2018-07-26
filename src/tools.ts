@@ -18,7 +18,10 @@ export class Toolbar {
                 new ToolButton("Sine wave", "url('images/sinewave.svg'), auto", "url('images/sinewave.svg')")
             ]),
             new ToolSection("Measures", [
-                new Button("New measure", "url('images/newmeasure.svg')")
+                new Button("New measure", "url('images/newmeasure.svg')", () => {
+                    staff.addMeasure();
+                    staff.display();
+                })
             ])
         ]
         this.staff = staff;
@@ -76,14 +79,16 @@ class ToolSection {
 class Button {
     name: string;
     image: string;
+    onclick: () => void;
 
-    constructor(name: string, image: string) {
+    constructor(name: string, image: string, onclick?: () => void) {
         this.name = name;
         this.image = image;
+        this.onclick = onclick;
     }
 
     getDOMElement(): DOMElement {
-        return new DOMElement("div", [
+        var element: DOMElement = new DOMElement("div", [
             new DOMAttr("class", "tool"),
             new DOMAttr("style", "background-image: " + this.image + ";")
         ], [
@@ -93,6 +98,10 @@ class Button {
                 new DOMElement("p", undefined, undefined, this.name)
             ])
         ]);
+
+        element.setOnClick(this.onclick);
+
+        return element;
     }
 }
 
@@ -103,7 +112,9 @@ class ToolButton extends Button {
     cursor: string;
 
     constructor(name: string, cursor: string, image: string) {
-        super(name, image);
+        super(name, image, () => {
+            document.getElementById("frameparent").style.cursor = this.cursor;
+        });
         this.cursor = cursor;
     }
 
@@ -114,11 +125,6 @@ class ToolButton extends Button {
         var style: string = element.getAttribute("style");
         style += " cursor: " + this.cursor + ";";
         element.setAttribute("style", style);
-
-        // set onclick
-        element.setOnClick(() => {
-            document.getElementById("frameparent").style.cursor = this.cursor;
-        });
 
         return element;
     }

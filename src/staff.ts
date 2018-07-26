@@ -80,6 +80,10 @@ export class Staff {
 
         return element;
     }
+
+    addMeasure() {
+        this.measures.push(new Measure());
+    }
 }
 
 /**
