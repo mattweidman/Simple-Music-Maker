@@ -4,11 +4,13 @@ export class DOMElement {
     name: string;
     attributes: DOMAttr[];
     children: SVGElement[];
+    value: string;
 
-    constructor(name: string, attributes?: DOMAttr[], children?: SVGElement[]) {
+    constructor(name: string, attributes?: DOMAttr[], children?: SVGElement[], value?: string) {
         this.name = name;
         this.attributes = attributes === undefined ? [] : attributes;
         this.children = children === undefined ? [] : children;
+        this.value = value === undefined ? "" : value;
     }
 
     /**
@@ -32,6 +34,10 @@ export class DOMElement {
         this.children.forEach(child => {
             elem.appendChild(child.getJSElement());
         });
+
+        if (this.value !== "") {
+            elem.innerHTML = this.value;
+        }
 
         return elem;
     }
@@ -60,6 +66,34 @@ export class DOMElement {
      */
     addChild(child: SVGElement) {
         this.children.push(child);
+    }
+
+    /**
+     * Gets the value of an attribute. Returns null if key not found.
+     * @param key name of attribute
+     */
+    getAttribute(key: string): string {
+        this.attributes.forEach(attribute => {
+            if (attribute.key === key) {
+                return attribute.value;
+            }
+        });
+        return null;
+    }
+
+    /**
+     * Replaces an attribute if the key already exists, else adds a new attribute.
+     * @param key name of attribute
+     * @param value value to give to attribute
+     */
+    setAttribute(key: string, value: string) {
+        this.attributes.forEach(attribute => {
+            if (attribute.key === key) {
+                attribute.value = value;
+                return;
+            }
+        });
+        this.addAttribute(new DOMAttr(key, value));
     }
 }
 

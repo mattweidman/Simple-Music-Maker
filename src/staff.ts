@@ -1,4 +1,4 @@
-import { DOMElement, SVGElement, DOMAttr } from "./domelements";
+import { SVGElement, DOMAttr } from "./domelements";
 
 /**
  * Represents and displays all the measures in the piece of music.
@@ -38,7 +38,7 @@ class Staff {
         staffDiv.replaceChild(jsElem, staffDiv.childNodes[0]);
     }
 
-    getDOMElement(): DOMElement {
+    getDOMElement(): SVGElement {
         var element: SVGElement = new SVGElement("svg", [
             new DOMAttr("width", this.pixelWidth + ""),
             new DOMAttr("height", this.pixelHeight + ""),
