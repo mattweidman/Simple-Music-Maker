@@ -1,5 +1,8 @@
 var xmlns: string = "http://www.w3.org/2000/svg";
 
+/**
+ * Represents an element in HTML DOM.
+ */
 export class DOMElement {
     name: string;
     attributes: DOMAttr[];
@@ -110,7 +113,7 @@ export class DOMElement {
 }
 
 /**
- * Represents an element in HTML DOM.
+ * Represents an SVG element in HTML DOM.
  */
 export class SVGElement extends DOMElement {
 

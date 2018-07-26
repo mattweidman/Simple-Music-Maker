@@ -1,12 +1,14 @@
 import { DOMElement, DOMAttr } from "./domelements"
+import { Staff } from "./staff";
 
 /**
  * Toolbar on left side of screen.
  */
-class Toolbar {
+export class Toolbar {
     sections: ToolSection[]
+    staff: Staff;
 
-    constructor() {
+    constructor(staff: Staff) {
         this.sections = [
             new ToolSection("Basic", [
                 new ToolButton("Selector", "default", "url('images/pointer.svg')"),
@@ -19,6 +21,7 @@ class Toolbar {
                 new Button("New measure", "url('images/newmeasure.svg')")
             ])
         ]
+        this.staff = staff;
     }
 
     display() {
@@ -120,6 +123,3 @@ class ToolButton extends Button {
         return element;
     }
 }
-
-var toolbar: Toolbar = new Toolbar();
-toolbar.display();

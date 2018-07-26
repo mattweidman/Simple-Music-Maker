@@ -3,7 +3,7 @@ import { SVGElement, DOMAttr } from "./domelements";
 /**
  * Represents and displays all the measures in the piece of music.
  */
-class Staff {
+export class Staff {
 
     pixelHeight: number; // height of staff in pixels
     pixelWidth: number; // width of staff in pixels
@@ -49,10 +49,16 @@ class Staff {
         element.addChild(g);
 
         // rows
-        var row1 = this.createRow(0);
+        var row1: SVGElement = this.createRow(0);
+        var rowLen: number = 0;
         this.measures.forEach((measure, index) => {
             row1.addChild(measure.getDOMElement(this.measureWidth, this.measureWidth * (index + 0.5)));
+            rowLen = this.measureWidth * (index + 1.5);
         });
+
+        // double bar
+        row1.addChild(verticalLine(rowLen - 4, 15, 40, 1));
+        row1.addChild(verticalLine(rowLen - 1, 15, 40, 2));
         
         g.addChild(row1);
 
@@ -60,20 +66,7 @@ class Staff {
     }
 
     createRow(ytranslate: number): SVGElement {
-        var element = new SVGElement("g", [
-            new DOMAttr("transform", "translate(0 " + ytranslate + ")")
-        ]);
-
-        // staff lines
-        for (var i=0; i<5; i++) {
-            var y: number = 15 + i * 10;
-            element.addChild(new SVGElement("line", [
-                new DOMAttr("x1", "0"),
-                new DOMAttr("y1", y + ""),
-                new DOMAttr("x2", this.measureWidth / 2 + ""),
-                new DOMAttr("y2", y + "")
-            ]));
-        }
+        var element = staffLines(0, ytranslate, this.measureWidth/2);
 
         // clef
         element.addChild(new SVGElement("use", [
@@ -83,12 +76,7 @@ class Staff {
         ]));
 
         // line on the left
-        element.addChild(new SVGElement("line", [
-            new DOMAttr("x1", "0.5"),
-            new DOMAttr("y1", "15"),
-            new DOMAttr("x2", "0.5"),
-            new DOMAttr("y2", "55")
-        ]));
+        element.addChild(verticalLine(0.5, 15, 40));
 
         return element;
     }
@@ -100,33 +88,78 @@ class Staff {
 class Measure {
 
     getDOMElement(measureWidth: number, xtranslate: number): SVGElement {
-        var element: SVGElement = new SVGElement("g", [
-            new DOMAttr("transform", "translate(" + xtranslate + " 0)")
-        ]);
-
-        // staff lines
-        for (var i=0; i<5; i++) {
-            var y: number = 15 + i * 10;
-            element.addChild(new SVGElement("line", [
-                new DOMAttr("x1", "0"),
-                new DOMAttr("y1", y + ""),
-                new DOMAttr("x2", measureWidth + ""),
-                new DOMAttr("y2", y + "")
-            ]));
-        }
+        var element: SVGElement = staffLines(xtranslate, 0, measureWidth);
 
         // line on the right
-        element.addChild(new SVGElement("line", [
-            new DOMAttr("x1", (measureWidth - 0.5) + ""),
-            new DOMAttr("y1", "15"),
-            new DOMAttr("x2", (measureWidth - 0.5) + ""),
-            new DOMAttr("y2", "55")
-        ]));
+        element.addChild(verticalLine(measureWidth - 0.5, 15, 40));
 
         return element;
     }
 }
 
-// create the staff
-var staff: Staff = new Staff();
-staff.display();
+/**
+ * Returns a vertical line SVG line element.
+ * @param x x coordinate of vertical line
+ * @param y top y coordinate
+ * @param length length of line
+ * @param strokeWidth width of line
+ */
+function verticalLine(x: number, y: number, length: number, strokeWidth?: number): SVGElement {
+    var element: SVGElement = new SVGElement("line", [
+        new DOMAttr("x1", x + ""),
+        new DOMAttr("y1", y + ""),
+        new DOMAttr("x2", x + ""),
+        new DOMAttr("y2", (y + length) + "")
+    ]);
+
+    if (strokeWidth !== undefined) {
+        element.addAttributes(
+            new DOMAttr("style", "stroke-width: " + strokeWidth + "px;")
+        );
+    }
+
+    return element;
+}
+
+/**
+ * Returns a horizontal line SVG line element.
+ * @param x left x coordinate
+ * @param y y coordinate
+ * @param length length of line
+ * @param strokeWidth width of line
+ */
+function horizontalLine(x: number, y: number, length: number, strokeWidth?: number): SVGElement {
+    var element: SVGElement = new SVGElement("line", [
+        new DOMAttr("x1", x + ""),
+        new DOMAttr("y1", y + ""),
+        new DOMAttr("x2", (x + length) + ""),
+        new DOMAttr("y2", y + "")
+    ]);
+
+    if (strokeWidth !== undefined) {
+        element.addAttributes(
+            new DOMAttr("style", "stroke-width: " + strokeWidth + "px;")
+        );
+    }
+
+    return element;
+}
+
+/**
+ * Creates 5 staff lines at position (x, y).
+ * @param x x-coordinate
+ * @param y y-coordinate
+ * @param length length of staff lines
+ */
+function staffLines(x: number, y: number, length: number): SVGElement {
+    var element: SVGElement = new SVGElement("g", [
+        new DOMAttr("transform", "translate(" + x + " " + y + ")")
+    ]);
+
+    for (var i=0; i<5; i++) {
+        var y: number = 15 + i * 10;
+        element.addChild(horizontalLine(0, y, length));
+    }
+
+    return element;
+}
