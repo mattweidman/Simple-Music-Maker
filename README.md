@@ -6,7 +6,6 @@ A simple music maker, inspired by Mario Paint. Currently a work in progress. I a
 
 ### Measures
 * Insert measures
-* Delete measures
 
 ### Notes
 * Cursor showing where note will be placed

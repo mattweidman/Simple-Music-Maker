@@ -140,6 +140,18 @@ export class Staff {
     addMeasure() {
         this.measures.push(new Measure(this));
     }
+
+    /**
+     * Delete selected measures.
+     */
+    deleteSelectedMeasures() {
+        for (var i = this.measures.length - 1; i >= 0; i--) {
+            if (this.selection.isSelected(this.measures[i])) {
+                this.selection.remove(this.measures[i]);
+                this.measures.splice(i, 1);
+            }
+        }
+    }
 }
 
 /**

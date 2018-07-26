@@ -24,6 +24,10 @@ export class Toolbar {
                 new Button("New measure", "url('images/newmeasure.svg')", () => {
                     staff.addMeasure();
                     staff.display();
+                }),
+                new Button("Delete measures", "url('images/deletemeasure.svg')", () => {
+                    staff.deleteSelectedMeasures();
+                    staff.display();
                 })
             ])
         ];
