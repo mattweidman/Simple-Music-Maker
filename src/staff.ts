@@ -5,27 +5,13 @@ import { SVGElement, DOMAttr } from "./domelements";
  */
 export class Staff {
 
-    pixelHeight: number; // height of staff in pixels
-    pixelWidth: number; // width of staff in pixels
-    innerHeight: number; // height of staff in SVG's coordinate system
-    innerWidth: number; // width of staff in SVG's coordinate system
+    scale: number; // amount to scale from original size
     measureWidth: number; // length of each measure (post-scaling)
     measureHeight: number; // distance between top of one measure to top of next (post-scaling)
     measures: Measure[];
 
     constructor() {
-
-        // basic values
-        var frame = document.getElementById("musicframe");
-        var width = frame.clientWidth;
-        var height = frame.clientHeight;
-        
-        this.pixelHeight = height;
-        this.pixelWidth = width;
-
-        var scale = 2;
-        this.innerHeight = height/scale;
-        this.innerWidth = width/scale;
+        this.scale = 2;
 
         this.measureWidth = 100;
         this.measureHeight = 100;
@@ -43,17 +29,34 @@ export class Staff {
     }
 
     getDOMElement(): SVGElement {
+        // figure out width
+        var frame = document.getElementById("musicframe");
+        var pixelWidth = frame.clientWidth;
+        var innerWidth = pixelWidth / this.scale;
+        var minWidth = this.measureWidth * 1.5;
+        if (innerWidth < minWidth) {
+            innerWidth = minWidth;
+            pixelWidth = innerWidth * this.scale;
+        }
+
+        // figure out height
+        var measureStart = this.measureWidth/2;
+        var measuresPerRow = Math.max(Math.floor((innerWidth - measureStart) / this.measureWidth), 1);
+        var numRows = Math.ceil(this.measures.length / measuresPerRow);
+        var innerHeight = numRows * this.measureHeight;
+        var pixelHeight = innerHeight * this.scale;
+
+        // create main SVG element
         var element: SVGElement = new SVGElement("svg", [
-            new DOMAttr("width", this.pixelWidth + ""),
-            new DOMAttr("height", this.pixelHeight + ""),
-            new DOMAttr("viewBox", "0 0 " + this.innerWidth + " " + this.innerHeight)
+            new DOMAttr("width", pixelWidth + ""),
+            new DOMAttr("height", pixelHeight + ""),
+            new DOMAttr("viewBox", "0 0 " + innerWidth + " " + innerHeight)
         ]);
 
         var g = new SVGElement("g");
         element.addChild(g);
 
         // initialize first row
-        var measureStart = this.measureWidth/2;
         var rowLen: number = measureStart;
         var rowY: number = 0;
         var row: SVGElement = this.createRow(rowY, rowLen);
@@ -63,7 +66,7 @@ export class Staff {
         this.measures.forEach(measure => {
 
             // go to next row when ready
-            if (rowLen + this.measureWidth >= this.innerWidth) {
+            if (rowLen + this.measureWidth > innerWidth) {
                 rowLen = measureStart;
                 rowY += this.measureHeight;
                 row = this.createRow(rowY, rowLen);
@@ -88,7 +91,7 @@ export class Staff {
      * @param width width of row beginning (not including first measure)
      */
     createRow(ytranslate: number, width: number): SVGElement {
-        var element = staffLines(0, ytranslate, width);
+        var element: SVGElement = staffLines(0, ytranslate, width);
 
         // clef
         element.addChild(new SVGElement("use", [

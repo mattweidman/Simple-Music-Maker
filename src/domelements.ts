@@ -15,6 +15,7 @@ export class DOMElement {
         this.attributes = attributes === undefined ? [] : attributes;
         this.children = children === undefined ? [] : children;
         this.value = value === undefined ? "" : value;
+        this.onclick = null;
     }
 
     /**
