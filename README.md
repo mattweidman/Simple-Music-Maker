@@ -4,9 +4,6 @@ A simple music maker, inspired by Mario Paint. Currently a work in progress. I a
 
 ## TODO
 
-### Measures
-* Insert measures
-
 ### Notes
 * Cursor showing where note will be placed
 * Place notes

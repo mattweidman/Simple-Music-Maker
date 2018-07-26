@@ -135,10 +135,25 @@ export class Staff {
     }
 
     /**
-     * Add new measure to end.
+     * Add new measure to the end of the selection, or to the end of the
+     * piece if nothing is selected.
      */
     addMeasure() {
-        this.measures.push(new Measure(this));
+        if (this.selection.size() === 0) {
+            var newMeasure: Measure = new Measure(this);
+            this.measures.push(newMeasure);
+            this.selection.setSelection(newMeasure);
+        }
+        else {
+            for (var i = this.measures.length - 1; i >= 0; i--) {
+                if (this.selection.isSelected(this.measures[i])) {
+                    var newMeasure: Measure = new Measure(this);
+                    this.measures.splice(i+1, 0, newMeasure);
+                    this.selection.setSelection(newMeasure);
+                    break;
+                }
+            }
+        }
     }
 
     /**
@@ -206,6 +221,13 @@ class Selection {
      */
     isSelected(obj: Selectable): boolean {
         return this.selected.indexOf(obj) > -1;
+    }
+
+    /**
+     * Number of selected objects.
+     */
+    size(): number {
+        return this.selected.length;
     }
 }
 
